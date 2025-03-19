@@ -1,5 +1,21 @@
+<?php
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: index.php");
+    exit();
+}
+
+// Check if the user's role is 'admin'
+if ($_SESSION['role'] !== 'admin') {
+    header("Location: index.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,34 +24,38 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            background-color: #f8f9fa;
-        }
-        .sidebar {
-            width: 250px;
-            background: #fff;
-            padding: 20px;
-            height: 100vh;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-        .content {
-            flex: 1;
-            padding: 20px;
-        }
-        .card {
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border: none;
-        }
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        background-color: #f8f9fa;
+    }
+
+    .sidebar {
+        width: 250px;
+        background: #fff;
+        padding: 20px;
+        height: 100vh;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .content {
+        flex: 1;
+        padding: 20px;
+    }
+
+    .card {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border: none;
+    }
     </style>
 </head>
+
 <body>
-<?php include 'includes/sidebar.php'; ?>
-    
+    <?php include 'includes/sidebar.php'; ?>
+
     <div class="content">
-    <?php include 'includes/header.php'; ?>   
-       
+        <?php include 'includes/header.php'; ?>
+
 
 
         <div class="row">
@@ -64,7 +84,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="row mt-4">
             <div class="col-md-8">
                 <div class="card p-3">
@@ -92,7 +112,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="card mt-4">
             <div class="card-header">
                 <h5 class="mb-0">Recent Stock Movements</h5>
@@ -131,34 +151,35 @@
             </div>
         </div>
     </div>
-    
+
     <script>
-        var ctx = document.getElementById('stockChart').getContext('2d');
-        var stockChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                datasets: [{
-                    label: 'Stock In',
-                    data: [12, 19, 13, 15, 20, 25, 18],
-                    borderColor: '#198754',
-                    fill: false
-                }, {
-                    label: 'Stock Out',
-                    data: [8, 15, 9, 12, 17, 19, 14],
-                    borderColor: '#dc3545',
-                    fill: false
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+    var ctx = document.getElementById('stockChart').getContext('2d');
+    var stockChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Stock In',
+                data: [12, 19, 13, 15, 20, 25, 18],
+                borderColor: '#198754',
+                fill: false
+            }, {
+                label: 'Stock Out',
+                data: [8, 15, 9, 12, 17, 19, 14],
+                borderColor: '#dc3545',
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
                 }
             }
-        });
+        }
+    });
     </script>
 </body>
+
 </html>

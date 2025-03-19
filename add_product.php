@@ -1,6 +1,18 @@
 <?php
 session_start();
 require_once 'config/db_connect.php';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name = mysqli_real_escape_string($conn, $_POST['name']);
+    $category_id = mysqli_real_escape_string($conn, $_POST['category_id']);
+    $quantity = (int)$_POST['quantity'];
+    $unit_price = (float)$_POST['unit_price'];
+    $description = mysqli_real_escape_string($conn, $_POST['description']);
+
+    // Insert product into database
+    $query = "INSERT INTO products (name<?php
+session_start();
+require_once 'config/db_connect.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -285,4 +297,17 @@ require_once 'config/db_connect.php';
     </script>
 </body>
 
-</html>
+</html>, category_id, quantity, unit_price, description, created_at)
+VALUES ('$name', '$category_id', '$quantity', '$unit_price', '$description', NOW())";
+
+if (mysqli_query($conn, $query)) {
+$_SESSION['message'] = "Product added successfully!";
+header("Location: products.php"); // Redirect back to products page
+exit();
+} else {
+$_SESSION['error'] = "Error: " . mysqli_error($conn);
+header("Location: products.php");
+exit();
+}
+}
+?>
