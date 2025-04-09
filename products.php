@@ -84,14 +84,42 @@ require_once 'config/db_connect.php';
         <?php include 'includes/header.php'; ?>
 
         <div class="d-flex justify-content-between align-items-center mb-4">
+            <!-- Title Section -->
             <h5><i class="bi bi-box-seam"></i> Product Management</h5>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
-                <i class="bi bi-plus"></i> Add Product
-            </button>
+
+            <!-- Button Section (aligned on the same line) -->
+            <div class="d-flex align-items-center">
+                <!-- Add Product Button -->
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                    <i class="bi bi-plus"></i> Add Product
+                </button>
+
+                <!-- Get Products Button -->
+                <form id="getProductsForm" action="getproducts.php" method="POST" class="ms-3">
+                    <button type="submit" class="btn btn-info">
+                        <i class="bi bi-cart"></i> Sale
+                    </button>
+                </form>
+            </div>
         </div>
+
+
 
         <div class="card shadow-sm">
             <div class="card-body">
+                <?php if (isset($_SESSION['success'])): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <?= $_SESSION['success']; unset($_SESSION['success']); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <?php endif; ?>
+
+                <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <?= $_SESSION['error']; unset($_SESSION['error']); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <?php endif; ?>
                 <table id="productTable" class="table table-striped table-bordered">
                     <thead class="table-dark">
                         <tr>
@@ -100,20 +128,26 @@ require_once 'config/db_connect.php';
                             <th>Category</th>
                             <th>Quantity</th>
                             <th>Unit Price</th>
-                            <th>Action</th> <!-- Add Action column -->
+                            <th>Total Price</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-        $query = "SELECT * FROM products";
-        $result = mysqli_query($conn, $query);
+       $query = "
+    SELECT products.id, products.name, products.quantity, products.unit_price, products.total_price, categories.name AS category_name
+    FROM products
+    JOIN categories ON products.category_id = categories.id
+";
+$result = mysqli_query($conn, $query);
         while ($row = mysqli_fetch_assoc($result)) {
             echo "<tr>
                 <td>{$row['id']}</td>
                 <td>{$row['name']}</td>
-                <td>{$row['category']}</td>
-                <td>{$row['quantity']}</td>
-                <td>\${$row['unit_price']}</td>
+                <td>{$row['category_name']}</td>
+                <td>Kg {$row['quantity']}</td>
+                <td>Rwf {$row['unit_price']}</td>
+                <td>Rwf {$row['total_price']}</td>
                 <td>
                     <a href='edit_product.php?id={$row['id']}' class='btn btn-sm btn-warning'>
                         <i class='bi bi-pencil-square'></i>
@@ -142,36 +176,42 @@ require_once 'config/db_connect.php';
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+
                     <form id="addProductForm" action="add_product.php" method="POST">
                         <div class="mb-3">
                             <label for="productName" class="form-label">Product Name</label>
                             <input type="text" class="form-control" id="productName" name="name" required>
                         </div>
+
                         <div class="mb-3">
                             <label for="categoryId" class="form-label">Category</label>
                             <select class="form-control" id="categoryId" name="category_id" required>
                                 <option value="">Select Category</option>
                                 <?php
-                            $category_query = "SELECT id, name FROM categories";
-                            $category_result = mysqli_query($conn, $category_query);
-                            while ($category = mysqli_fetch_assoc($category_result)) {
-                                echo "<option value='{$category['id']}'>{$category['name']}</option>";
-                            }
-                            ?>
+            $category_query = "SELECT id, name FROM categories";
+            $category_result = mysqli_query($conn, $category_query);
+            while ($category = mysqli_fetch_assoc($category_result)) {
+                echo "<option value='{$category['id']}'>{$category['name']}</option>";
+            }
+            ?>
                             </select>
                         </div>
+
                         <div class="mb-3">
                             <label for="quantity" class="form-label">Quantity</label>
                             <input type="number" class="form-control" id="quantity" name="quantity" required>
                         </div>
+
                         <div class="mb-3">
                             <label for="unitPrice" class="form-label">Unit Price</label>
                             <input type="text" class="form-control" id="unitPrice" name="unit_price" required>
                         </div>
+
                         <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
+                            <label for="description" class="form-label">Description (optional)</label>
                             <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                         </div>
+
                         <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Save Product</button>
                     </form>
                 </div>

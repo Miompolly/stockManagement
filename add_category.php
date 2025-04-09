@@ -19,12 +19,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if ($stmt->execute()) {
             $_SESSION['success'] = 'Category added successfully';
+            header("Location: categories.php");
         } else {
             $_SESSION['error'] = 'Failed to add category';
+             header("Location: categories.php");
+            
         }
         $stmt->close();
     } else {
         $_SESSION['error'] = 'Category name is required';
+         header("Location: categories.php");
     }
 
     header("Location: categories.php");
